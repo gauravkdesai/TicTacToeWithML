@@ -25,6 +25,90 @@ class RandomGuess(ComputerInterface):
         selected_position = empty_cells[random_move_cell_id].get_position()
         return selected_position.get_x(), selected_position.get_y()
 
+class BasicRules(ComputerInterface):
+    def get_next_move(self, board):
+
+        ## calculates the weitage of each row/col/axes
+        count_for_rows = np.zeros(board.size)
+        count_for_cols = np.zeros(board.size)
+        count_for_major_axis = 0
+        count_for_minor_axis = 0
+
+        next_player_marking = board.nextPlayer.get_marking()
+
+        for row in range(board.size):
+
+            for col in range(board.size):
+                c = board.cells[row][col]
+
+                increment = 0
+                if c.get_marking() == next_player_marking:
+                    increment = 1
+                elif not c.is_empty(): # opposite player marking
+                    increment = -1
+
+                count_for_rows[row] += increment
+                count_for_cols[col] += increment
+
+                if c.is_on_major_axis():
+                    count_for_major_axis += increment
+
+                if c.is_on_minor_axis():
+                    count_for_minor_axis += increment
+
+
+        # now check if current player has two in any row/col/axes
+        cell_selected = False
+        for i in range(board.size):
+            if count_for_rows[i] == 2:
+                selected_cell = [c for c in board.cells[i, :].flatten() if c.is_empty() ]
+                cell_selected = True
+                break
+
+            if count_for_cols[i] == 2:
+                selected_cell = [c for c in board.cells[:, i].flatten() if c.is_empty()]
+                cell_selected = True
+                break
+
+        if not cell_selected and count_for_major_axis == 2:
+            selected_cell = [c for c in board.cells.flatten() if c.is_empty() and c.is_on_major_axis()]
+            cell_selected = True
+
+        if not cell_selected and count_for_minor_axis == 2:
+            selected_cell = [c for c in board.cells.flatten() if c.is_empty() and c.is_on_minor_axis()]
+            cell_selected = True
+
+        # now check if opponent is about to complete sequence, then block it
+        if not cell_selected:
+            for i in range(board.size):
+                if count_for_rows[i] == -2:
+                    selected_cell = [c for c in board.cells[i, :].flatten() if c.is_empty() ]
+                    cell_selected = True
+                    break
+
+                if count_for_cols[i] == -2:
+                    selected_cell = [c for c in board.cells[:, i].flatten() if c.is_empty()]
+                    cell_selected = True
+                    break
+
+        if not cell_selected and count_for_major_axis == -2:
+            selected_cell = [c for c in board.cells.flatten() if c.is_empty() and c.is_on_major_axis()]
+            cell_selected = True
+
+        if not cell_selected and count_for_minor_axis == -2:
+            selected_cell = [c for c in board.cells.flatten() if c.is_empty() and c.is_on_minor_axis()]
+            cell_selected = True
+
+
+        # if we found any cell that is either a winning move or defensive move then make it else make random move
+        if cell_selected:
+            #print("Length=",len(selected_cell))
+            selected_position = selected_cell[0].get_position()
+            #print("x,y=",selected_position.get_x(), selected_position.get_y())
+            return selected_position.get_x(), selected_position.get_y()
+        else:
+            return RandomGuess().get_next_move(board)
+
 
 class DecisionTreePlayer(ComputerInterface):
     def __init__(self):

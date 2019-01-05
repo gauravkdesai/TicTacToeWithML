@@ -16,10 +16,10 @@ def print_stats(match_stats, total_matches, drawn_matches):
     print("Total Matches Played in this session = {}".format(total_matches))
 
     for key in match_stats.keys():
-        print(("Matches won by {} = {} (winning % {})".format(key, match_stats[key],
+        print(("Matches won by {} = {} (winning % {:.2f})".format(key, match_stats[key],
                                                               100 * match_stats[key] / total_matches)))
 
-    print("Matches drawn = {} ({} %)".format(drawn_matches, 100 * drawn_matches / total_matches))
+    print("Matches drawn = {} ({:.2f} %)".format(drawn_matches, 100 * drawn_matches / total_matches))
 
     print("#" * 80)
 
@@ -31,7 +31,7 @@ def main(number_of_iterations=1, player_config_name='RandomGuessVsHuman'):
 
     for i in range(number_of_iterations):
 
-        if i % 100 == 0 and not (i == 0):
+        if i % 200 == 0 and not (i == 0):
             model_builder = DecisionTreeModelBuilder("Board_Data.csv", "Decision_Tree_Model.txt")
             model_builder.train_and_save_model()
             print_stats(match_stats, total_matches, drawn_matches)
@@ -70,4 +70,12 @@ def main(number_of_iterations=1, player_config_name='RandomGuessVsHuman'):
 
 
 if __name__ == "__main__":
-    main(number_of_iterations=10000,player_config_name='RandomGuessVsDecisionTreePlayer')
+    #main(number_of_iterations=10000,player_config_name='RandomGuessVsRandomGuess')
+    #main(number_of_iterations=1,player_config_name='RandomGuessVsDecisionTreePlayer')
+    #main(number_of_iterations=10000,player_config_name='DecisionTreePlayerVsDecisionTreePlayer')
+    #main(number_of_iterations=20,player_config_name='BasicRulesVsHuman-RandomOrder')
+    main(number_of_iterations=10000,player_config_name='BasicRulesVsDecisionTreePlayer')
+
+
+
+

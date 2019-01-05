@@ -4,12 +4,11 @@ from operator import itemgetter
 
 def get_score(current_player_is_winner, distance_to_last_move, is_draw):
     if is_draw:
-        # total_points = 7
-        return 0
+        total_points = 2
     else:
         total_points = 15
 
-    score = total_points  # - distance_to_last_move
+    score = total_points #- distance_to_last_move
 
     if (not is_draw) and (not current_player_is_winner):
         score *= -1
@@ -29,7 +28,7 @@ class CSVWriter:
             fileWriter = csv.writer(fileToWrite)
             fileWriter.writerows(board_lines)
 
-        print("Board persisted in {} file".format(self.filePath))
+        #print("Board persisted in {} file".format(self.filePath))
 
     def clear(self):
         pass

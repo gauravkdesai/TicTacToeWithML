@@ -138,7 +138,7 @@ class Board:
                 self.move_counter += 1
                 to_be_marked_cell.set_marking(self.nextPlayer.get_marking(), self.move_counter)
                 # print(to_be_marked_cell)
-                self.display_interface.display_player_made_move_message(self)
+                #self.display_interface.display_player_made_move_message(self)
                 break
 
             attempt_counter += 1

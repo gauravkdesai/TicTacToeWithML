@@ -1,4 +1,4 @@
-from Coputer_Interface import RandomGuess, ComputerInterface, DecisionTreePlayer
+from Coputer_Interface import RandomGuess, ComputerInterface, DecisionTreePlayer, BasicRules
 from random import shuffle
 
 from Display import CommandLineInterface
@@ -133,6 +133,21 @@ PLAYERS_CONFIGS = \
                 'player1': {'interface': CommandLineInterface()},
                 'player2': {'interface': DecisionTreePlayer()},
                 'maintain_order': False
+            },
+        'BasicRulesVsDecisionTreePlayer':
+            {
+                'player1': {'interface': BasicRules()},
+                'player2': {'interface': DecisionTreePlayer()},
+                'maintain_order': False
+            },
+        'BasicRulesVsHuman-RandomOrder':
+            {
+                'player1': {'interface': BasicRules()},
+                'player2': {'interface': CommandLineInterface()},
+                'maintain_order': False
             }
+
+
+
 
     }

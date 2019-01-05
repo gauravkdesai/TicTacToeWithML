@@ -32,6 +32,7 @@ class DecisionTreeModelBuilder:
         print("Read {} records from file".format(board_data_df.size))
         return board_data_df
 
+
     def train_and_save_model(self):
 
         board_data_df = self.get_data_from_file()
@@ -43,16 +44,21 @@ class DecisionTreeModelBuilder:
         X = pd.DataFrame(data=board_data_df.loc[:, 'next_move'])
         Y = board_data_df.loc[:, 'score']
 
-        self.cv = CountVectorizer(analyzer='char')
-        XCV = self.cv.fit_transform(board_data_df.loc[:, 'board_state'])
+        # for each cell position, add +1 to X if it was current players move else add -1
+        for cell_index in range(9):
+            X.loc[:, str(cell_index)] =  board_data_df.loc[:, 'board_state'].apply(get_mov_info, args=(cell_index,))
 
-        for i, col in enumerate(self.cv.get_feature_names()):
-            X.loc[:, col] = pd.SparseSeries(XCV[:, i].toarray().ravel(), fill_value=0)
 
-        print("Printing top X")
-        print(X.head())
+        # self.cv = CountVectorizer(analyzer='char')
+        # XCV = self.cv.fit_transform(board_data_df.loc[:, 'board_state'])
+        #
+        # for i, col in enumerate(self.cv.get_feature_names()):
+        #     X.loc[:, col] = pd.SparseSeries(XCV[:, i].toarray().ravel(), fill_value=0)
 
-        self.dt = DecisionTreeRegressor(max_depth=3)
+        #print("Printing top X")
+        #print(X.head())
+
+        self.dt = DecisionTreeRegressor(max_depth=8)
         self.dt.fit(X, Y)
 
         dump((self.cv, self.dt), self.model_file)
@@ -67,17 +73,37 @@ class DecisionTreeModelBuilder:
             raise RuntimeError
 
         X = np.asarray(next_move)
-        # print(X)
+        print(X)
 
-        XCV = self.cv.transform([board_state, ])
+        # XCV = self.cv.transform([board_state, ])
         # print(XCV.toarray())
 
-        X = np.append(X, XCV.toarray())
-        print(X.reshape(1, -1))
+        # X = np.append(X, XCV.toarray())
+        # for each cell position, add +1 to X if it was current players move else add -1
+        for cell_index in range(9):
+            X=np.append(X,get_mov_info(board_state,cell_index))
+
+        print("X,",X)
+
+        #print(X.reshape(1, -1))
 
         predicted_score = self.dt.predict(X.reshape(1, -1))
 
         return predicted_score
+
+
+def get_mov_info(board_state, cell_index):
+    cell_already_marked = str(cell_index) in board_state
+
+    if cell_already_marked:
+        cell_sequence = board_state.index(str(cell_index))
+        if cell_sequence%2 == len(board_state)%2:
+            return 1  # current players move
+        else:
+            return -1  # opposite players moves
+    else:
+        return 0 # cell not marked
+
 
 
 def main():
